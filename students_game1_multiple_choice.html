@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎯 Multiple Choice — Biases & Fallacies (Students)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #F0F4FF; color: #1E293B; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .game-wrap { width: 100%; max-width: 720px; }
+
+  /* INTRO */
+  .intro-card { background: #fff; border-radius: 24px; padding: 44px 40px; text-align: center; box-shadow: 0 8px 40px rgba(99,102,241,.13); border: 1px solid #E0E7FF; }
+  .intro-icon { font-size: 3.5rem; margin-bottom: 10px; }
+  .intro-card h1 { font-size: 1.9rem; font-weight: 800; color: #1E293B; margin-bottom: 6px; }
+  .intro-card h1 span { color: #6366F1; }
+  .intro-card p { color: #64748B; font-size: 1rem; line-height: 1.65; margin: 10px 0 28px; }
+  .rules { background: #F0F4FF; border-radius: 14px; padding: 18px 22px; text-align: left; margin-bottom: 28px; }
+  .rules h3 { font-size: .85rem; font-weight: 700; color: #6366F1; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .rule { display: flex; align-items: center; gap: 10px; font-size: .92rem; color: #475569; margin-bottom: 8px; }
+  .rule-dot { width: 8px; height: 8px; border-radius: 50%; background: #6366F1; flex-shrink: 0; }
+  .start-btn { background: linear-gradient(135deg, #6366F1, #0D9488); border: none; border-radius: 50px; color: #fff; font-size: 1.1rem; font-weight: 700; padding: 16px 52px; cursor: pointer; transition: opacity .2s; letter-spacing: .5px; box-shadow: 0 4px 18px rgba(99,102,241,.35); }
+  .start-btn:hover { opacity: .88; }
+
+  /* HUD */
+  .hud { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 8px; flex-wrap: wrap; }
+  .hud-badge { background: #fff; border: 1px solid #E2E8F0; border-radius: 50px; padding: 6px 16px; font-size: .83rem; font-weight: 600; color: #64748B; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .hud-score { color: #6366F1; font-weight: 800; }
+  .hud-streak { color: #0D9488; font-weight: 800; }
+  .timer-ok { color: #0D9488; font-weight: 800; }
+  .timer-warn { color: #F59E0B; font-weight: 800; }
+  .timer-low { color: #EF4444; font-weight: 800; }
+
+  .progress-wrap { background: #E2E8F0; border-radius: 10px; height: 6px; margin-bottom: 18px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #6366F1, #0D9488); border-radius: 10px; transition: width .4s ease; }
+
+  /* CARD */
+  .q-card { background: #fff; border-radius: 20px; padding: 28px; box-shadow: 0 4px 24px rgba(99,102,241,.10); border: 1px solid #E0E7FF; }
+  .q-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .q-cat { font-size: .72rem; font-weight: 700; letter-spacing: 2px; padding: 4px 14px; border-radius: 50px; text-transform: uppercase; }
+  .cat-bias { background: #CCFBF1; color: #0F766E; }
+  .cat-fallacy { background: #EDE9FE; color: #6D28D9; }
+  .cat-both { background: #FEF3C7; color: #B45309; }
+  .cat-definition { background: #FCE7F3; color: #BE185D; }
+  .q-type { font-size: .78rem; color: #94A3B8; font-style: italic; }
+  .q-text { font-size: 1.08rem; font-weight: 600; color: #1E293B; line-height: 1.6; margin-bottom: 22px; }
+
+  .opts { display: grid; gap: 10px; }
+  .opt { background: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 13px 16px; text-align: left; font-size: .95rem; color: #334155; cursor: pointer; transition: all .18s; display: flex; align-items: flex-start; gap: 12px; width: 100%; }
+  .opt:hover:not(:disabled) { border-color: #6366F1; background: #EEF2FF; color: #1E293B; }
+  .opt:disabled { cursor: default; }
+  .opt.correct { border-color: #10B981; background: #ECFDF5; color: #065F46; }
+  .opt.wrong { border-color: #EF4444; background: #FEF2F2; color: #991B1B; }
+  .opt.reveal { border-color: #10B981; background: #ECFDF5; color: #065F46; opacity: .75; }
+  .opt-letter { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; border-radius: 8px; background: #E2E8F0; font-size: .78rem; font-weight: 700; color: #64748B; flex-shrink: 0; }
+  .opt.correct .opt-letter { background: #10B981; color: #fff; }
+  .opt.wrong .opt-letter { background: #EF4444; color: #fff; }
+  .opt.reveal .opt-letter { background: #10B981; color: #fff; }
+
+  .feedback { margin-top: 14px; padding: 14px 18px; border-radius: 12px; font-size: .9rem; line-height: 1.55; display: none; }
+  .feedback.show { display: block; }
+  .feedback.ok { background: #ECFDF5; border: 1px solid #10B981; color: #065F46; }
+  .feedback.bad { background: #FEF2F2; border: 1px solid #EF4444; color: #991B1B; }
+  .feedback strong { font-weight: 700; }
+
+  .next-btn { margin-top: 14px; width: 100%; background: linear-gradient(135deg,#6366F1,#0D9488); border: none; border-radius: 12px; color: #fff; font-size: 1rem; font-weight: 700; padding: 14px; cursor: pointer; display: none; transition: opacity .2s; }
+  .next-btn.show { display: block; }
+  .next-btn:hover { opacity: .88; }
+
+  /* RESULT */
+  .result-card { background: #fff; border-radius: 24px; padding: 44px 36px; text-align: center; box-shadow: 0 8px 40px rgba(99,102,241,.13); border: 1px solid #E0E7FF; }
+  .medal { font-size: 4rem; margin-bottom: 8px; }
+  .result-card h2 { font-size: 1.7rem; font-weight: 800; color: #1E293B; margin-bottom: 6px; }
+  .result-pts { font-size: 3.5rem; font-weight: 900; color: #6366F1; margin: 8px 0; }
+  .result-sub { color: #94A3B8; font-size: .95rem; margin-bottom: 22px; }
+  .breakdown { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 28px; }
+  .bd-item { background: #F8FAFC; border-radius: 14px; padding: 16px 10px; border: 1px solid #E2E8F0; }
+  .bd-num { font-size: 1.7rem; font-weight: 800; }
+  .bd-label { font-size: .75rem; color: #94A3B8; margin-top: 4px; }
+  .bd-c .bd-num { color: #10B981; }
+  .bd-w .bd-num { color: #EF4444; }
+  .bd-s .bd-num { color: #6366F1; }
+  .replay-btn { background: linear-gradient(135deg,#6366F1,#0D9488); border: none; border-radius: 50px; color: #fff; font-size: 1rem; font-weight: 700; padding: 14px 44px; cursor: pointer; transition: opacity .2s; box-shadow: 0 4px 18px rgba(99,102,241,.3); }
+  .replay-btn:hover { opacity: .85; }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+  .pts-pop { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 2.5rem; font-weight: 900; color: #6366F1; pointer-events: none; animation: pop .7s forwards; z-index: 999; }
+  @keyframes pop { 0%{opacity:1;transform:translate(-50%,-50%) scale(1)} 100%{opacity:0;transform:translate(-50%,-130%) scale(1.4)} }
+</style>
+</head>
+<body>
+<div class="game-wrap">
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="intro-card">
+    <div class="intro-icon">🎯</div>
+    <h1>Multiple Choice<br><span>Quiz</span></h1>
+    <p>Test what you know about thinking traps and tricky arguments.<br>4 options per question — pick the best answer!</p>
+    <div class="rules">
+      <h3>How to Play</h3>
+      <div class="rule"><span class="rule-dot"></span>20 seconds per question</div>
+      <div class="rule"><span class="rule-dot"></span>Faster answers = more bonus points</div>
+      <div class="rule"><span class="rule-dot"></span>Build streaks for extra points</div>
+      <div class="rule"><span class="rule-dot"></span>Read the explanation after each answer</div>
+    </div>
+    <button class="start-btn" onclick="start()">Start Quiz ▶</button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="s-quiz">
+  <div class="hud">
+    <div class="hud-badge">Q <b id="qn">1</b> / <b id="qt">12</b></div>
+    <div class="hud-badge">⏱ <span id="timer" class="timer-ok">20</span>s</div>
+    <div class="hud-badge hud-score">⭐ <span id="score">0</span></div>
+    <div class="hud-badge hud-streak">🔥 <span id="streak">0</span></div>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="pbar"></div></div>
+  <div class="q-card">
+    <div class="q-top">
+      <span class="q-cat" id="qcat">Bias</span>
+      <span class="q-type" id="qtype"></span>
+    </div>
+    <div class="q-text" id="qtext"></div>
+    <div class="opts" id="opts"></div>
+    <div class="feedback" id="fb"></div>
+    <button class="next-btn" id="nbtn" onclick="next()">Next Question →</button>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="s-result">
+  <div class="result-card">
+    <div class="medal" id="medal">🏆</div>
+    <h2 id="rtitle">Well done!</h2>
+    <div class="result-pts" id="rpts">0</div>
+    <div class="result-sub" id="rsub">points earned</div>
+    <div class="breakdown">
+      <div class="bd-item bd-c"><div class="bd-num" id="bc">0</div><div class="bd-label">Correct</div></div>
+      <div class="bd-item bd-w"><div class="bd-num" id="bw">0</div><div class="bd-label">Wrong</div></div>
+      <div class="bd-item bd-s"><div class="bd-num" id="bs">0</div><div class="bd-label">Best Streak</div></div>
+    </div>
+    <button class="replay-btn" onclick="start()">🔄 Play Again</button>
+  </div>
+</div>
+
+</div>
+<script>
+const MCQ_QUESTIONS=[
+{cat:"definition",catLabel:"Definition",catClass:"cat-definition",qtype:"Cognitive Bias",q:"What is a <strong>Cognitive Bias</strong>?",opts:["A mental shortcut that can lead your brain to think in an unfair or inaccurate way","A type of homework you get in school","A rule that teachers use to grade exams","A game you play with friends at recess"],ans:0,exp:"A cognitive bias is a pattern in how our brain thinks that can lead to mistakes in judgment — like jumping to conclusions without realizing it."},
+{cat:"definition",catLabel:"Definition",catClass:"cat-definition",qtype:"Logical Fallacy",q:"What is a <strong>Logical Fallacy</strong>?",opts:["A spelling mistake in an essay","A weak or tricky argument that sounds convincing but doesn't actually make sense","A type of math problem","A rule in a video game"],ans:1,exp:"A logical fallacy is a flaw in an argument. It might sound convincing, but if you look closely, the reasoning doesn't actually hold up."},
+{cat:"definition",catLabel:"Key Difference",catClass:"cat-both",qtype:"CT Concept",q:"What's the <strong>difference</strong> between a cognitive bias and a logical fallacy?",opts:["There's no difference, they're the same thing","A bias is a mistake your brain makes automatically; a fallacy is a mistake in how an argument is built","Biases only happen to adults, fallacies only happen to kids", "Fallacies are always on purpose, biases never happen"],ans:1,exp:"A cognitive bias happens automatically inside your own head. A logical fallacy is a flaw in how someone builds an argument — sometimes on purpose, sometimes by accident."},
+{cat:"bias",catLabel:"Cognitive Bias",catClass:"cat-bias",qtype:"Type",q:"<strong>Confirmation Bias</strong> means:",opts:["Always telling the truth", "Only paying attention to things that agree with what you already believe, and ignoring the rest","Confirming your attendance in class","Checking your phone every five minutes"],ans:1,exp:"Confirmation bias makes us notice and believe things that match what we already think, while ignoring anything that disagrees with us — like only reading reviews that praise a phone you already want to buy."},
+{cat:"bias",catLabel:"Cognitive Bias",catClass:"cat-bias",qtype:"Type",q:"You spent 3 hours building a tower of blocks. It keeps falling, but you refuse to try a new design because 'I already put so much time into this one.' This is:",opts:["Confirmation Bias","Sunk Cost Fallacy","Dunning-Kruger Effect","Halo Effect"],ans:1,exp:"The Sunk Cost Fallacy is sticking with something just because you already invested time or effort in it — even when starting fresh would clearly work better."},
+{cat:"bias",catLabel:"Cognitive Bias",catClass:"cat-bias",qtype:"Type",q:"After seeing three scary shark videos on social media, a student becomes terrified of ever going to the beach — even though shark attacks are extremely rare. This is:",opts:["Anchoring Bias","Availability Heuristic","Groupthink","Halo Effect"],ans:1,exp:"The Availability Heuristic happens when we judge how common or dangerous something is based on how easily we can remember examples — vivid videos stick in our memory more than boring statistics."},
+{cat:"bias",catLabel:"Cognitive Bias",catClass:"cat-bias",qtype:"Type",q:"A shop first shows a hoodie priced at 1200 EGP, then 'on sale' for 700 EGP. It feels like a great deal — even though 700 EGP is still expensive. This is an example of:",opts:["Availability Heuristic","Dunning-Kruger Effect","Anchoring Bias","Confirmation Bias"],ans:2,exp:"Anchoring Bias happens when the first number we see (1200) becomes a reference point that changes how we judge everything after it, even if 700 is still a high price."},
+{cat:"bias",catLabel:"Cognitive Bias",catClass:"cat-bias",qtype:"Type",q:"A student who just started learning chess thinks they could easily beat the school chess champion, while an advanced player is more careful about predicting the result. This reflects:",opts:["Sunk Cost Fallacy","Dunning-Kruger Effect","Groupthink","Loss Aversion"],ans:1,exp:"The Dunning-Kruger Effect: people with very little knowledge in something often overestimate how good they are at it, because they don't yet know what they don't know."},
+{cat:"bias",catLabel:"Cognitive Bias",catClass:"cat-bias",qtype:"Type",q:"In a group project, everyone secretly disagrees with one classmate's idea, but no one says anything because they don't want to seem difficult. The group goes along with a bad plan. This is:",opts:["Availability Heuristic","Halo Effect","Groupthink","Anchoring Bias"],ans:2,exp:"Groupthink happens when people stay quiet about their real opinions just to avoid conflict or to fit in with the group, even if it leads to a worse decision."},
+{cat:"bias",catLabel:"Cognitive Bias",catClass:"cat-bias",qtype:"Type",q:"A new student is really good-looking and confident, so classmates assume they must also be smart, kind, and a good leader — without any real evidence. This is called:",opts:["Halo Effect","Anchoring Bias","Sunk Cost Fallacy","Confirmation Bias"],ans:0,exp:"The Halo Effect: one positive trait (like looking confident) makes us assume a person is good at everything else too, even with no proof."},
+{cat:"fallacy",catLabel:"Logical Fallacy",catClass:"cat-fallacy",qtype:"Type",q:"'You can't have an opinion about the football match, you don't even play football.' This is an example of:",opts:["Straw Man","Ad Hominem","False Dichotomy","Appeal to Popularity"],ans:1,exp:"Ad Hominem attacks the person instead of their actual point. Whether someone plays football or not has nothing to do with whether their opinion about a match is reasonable."},
+{cat:"fallacy",catLabel:"Logical Fallacy",catClass:"cat-fallacy",qtype:"Type",q:"'If the teacher lets us use phones during break, soon she'll let us use them in class, and eventually no one will ever study again.' This fallacy is:",opts:["False Dichotomy","Hasty Generalization","Slippery Slope","Circular Reasoning"],ans:2,exp:"Slippery Slope assumes that one small step will automatically lead to a chain of extreme results, without any real evidence connecting the steps."},
+{cat:"fallacy",catLabel:"Logical Fallacy",catClass:"cat-fallacy",qtype:"Type",q:"'Either you're on my side in this argument, or you're against me.' This statement is an example of:",opts:["Ad Hominem","False Dichotomy","Straw Man","Appeal to Emotion"],ans:1,exp:"False Dichotomy presents only two extreme options when there are actually many possibilities in between — like being neutral or seeing both sides."},
+{cat:"fallacy",catLabel:"Logical Fallacy",catClass:"cat-fallacy",qtype:"Type",q:"'Everyone in school has the new phone, so my parents should buy me one too.' This is:",opts:["Slippery Slope","Appeal to Authority","Appeal to Popularity","Hasty Generalization"],ans:2,exp:"Appeal to Popularity says something must be right or necessary just because lots of people are doing it — but popularity doesn't actually prove something is a good idea."},
+{cat:"fallacy",catLabel:"Logical Fallacy",catClass:"cat-fallacy",qtype:"Type",q:"'My classmate says we should recycle more at school. He probably just wants everyone to think he's better than us.' This is an example of:",opts:["Straw Man","Red Herring","Ad Hominem","Circular Reasoning"],ans:2,exp:"This is Ad Hominem — instead of discussing the actual idea (recycling), the response attacks the classmate's assumed motives."},
+{cat:"fallacy",catLabel:"Logical Fallacy",catClass:"cat-fallacy",qtype:"Type",q:"'This app is the best because the app description says it's the best.' What fallacy is this?",opts:["Hasty Generalization","Circular Reasoning","Appeal to Tradition","Red Herring"],ans:1,exp:"Circular Reasoning happens when the 'proof' is just repeating the claim itself instead of giving real evidence — the argument goes in a circle."},
+{cat:"fallacy",catLabel:"Logical Fallacy",catClass:"cat-fallacy",qtype:"Type",q:"A student tries one new energy drink before an exam, does well, and then tells everyone 'this energy drink makes you smarter.' This is:",opts:["Straw Man","False Dichotomy","Hasty Generalization","Post Hoc Fallacy"],ans:2,exp:"Hasty Generalization means drawing a big conclusion from just one small example — one good exam result isn't enough proof that the drink caused it."},
+{cat:"fallacy",catLabel:"Logical Fallacy",catClass:"cat-fallacy",qtype:"Type",q:"'I wore my lucky socks and we won the match. The socks must be the reason we won.' This is:",opts:["Slippery Slope","Post Hoc Fallacy","Hasty Generalization","Circular Reasoning"],ans:1,exp:"Post Hoc Fallacy means assuming that because one thing happened before another, it must have caused it. Wearing socks and winning a match happening together doesn't mean one caused the other."},
+{cat:"fallacy",catLabel:"Logical Fallacy",catClass:"cat-fallacy",qtype:"Type",q:"When asked why he didn't finish his homework, a student starts talking about how unfair the school canteen prices are. This tactic is called:",opts:["Ad Hominem","Red Herring","Straw Man","False Dichotomy"],ans:1,exp:"Red Herring means bringing up something irrelevant on purpose to distract from the real question — here, canteen prices have nothing to do with the homework."}
+];
+
+let qs=[],qi=0,score=0,streak=0,best=0,correct=0,wrong=0,timer=null,tl=0;
+function shuffle(a){return[...a].sort(()=>Math.random()-.5);}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function pop(t){const e=document.createElement('div');e.className='pts-pop';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),750);}
+
+function start(){
+  qs=shuffle(MCQ_QUESTIONS).slice(0,12);qi=0;score=0;streak=0;best=0;correct=0;wrong=0;
+  document.getElementById('qt').textContent=qs.length;
+  show('s-quiz');render();
+}
+
+function render(){
+  clearInterval(timer);
+  const q=qs[qi];
+  document.getElementById('qn').textContent=qi+1;
+  document.getElementById('pbar').style.width=((qi/qs.length)*100)+'%';
+  document.getElementById('score').textContent=score;
+  document.getElementById('streak').textContent=streak;
+  const cat=document.getElementById('qcat');
+  cat.textContent=q.catLabel;cat.className='q-cat '+q.catClass;
+  document.getElementById('qtype').textContent=q.qtype||'';
+  document.getElementById('qtext').innerHTML=q.q;
+  document.getElementById('fb').className='feedback';
+  document.getElementById('nbtn').className='next-btn';
+  const area=document.getElementById('opts');area.innerHTML='';
+  ['A','B','C','D'].forEach((L,i)=>{
+    const b=document.createElement('button');b.className='opt';
+    b.innerHTML=`<span class="opt-letter">${L}</span>${q.opts[i]}`;
+    b.onclick=()=>answer(i,b,q);area.appendChild(b);
+  });
+  tl=20;tick();
+  timer=setInterval(()=>{tl--;tick();if(tl<=0){clearInterval(timer);timeout();}},1000);
+}
+
+function tick(){
+  const el=document.getElementById('timer');el.textContent=tl;
+  el.className=tl>10?'timer-ok':tl>5?'timer-warn':'timer-low';
+}
+
+function answer(i,btn,q){
+  clearInterval(timer);
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  if(i===q.ans){btn.classList.add('correct');const pts=100+streak*20+tl*5;score+=pts;correct++;streak++;if(streak>best)best=streak;document.getElementById('score').textContent=score;document.getElementById('streak').textContent=streak;pop('+'+pts);}
+  else{btn.classList.add('wrong');document.querySelectorAll('.opt')[q.ans].classList.add('reveal');wrong++;streak=0;document.getElementById('streak').textContent=0;}
+  const fb=document.getElementById('fb');
+  fb.className='feedback show '+(i===q.ans?'ok':'bad');
+  fb.innerHTML=(i===q.ans?'<strong>✓ Correct!</strong> ':'<strong>✗ Not quite.</strong> ')+q.exp;
+  document.getElementById('nbtn').className='next-btn show';
+}
+
+function timeout(){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.opt')[qs[qi].ans].classList.add('reveal');
+  wrong++;streak=0;document.getElementById('streak').textContent=0;
+  const fb=document.getElementById('fb');fb.className='feedback show bad';
+  fb.innerHTML='<strong>⏰ Time\'s up!</strong> '+qs[qi].exp;
+  document.getElementById('nbtn').className='next-btn show';
+}
+
+function next(){qi++;if(qi>=qs.length)result();else render();}
+
+function result(){
+  clearInterval(timer);
+  const pct=Math.round((correct/qs.length)*100);
+  let medal='🎖️',title='Keep Practicing!';
+  if(pct>=90){medal='🏆';title='Critical Thinking Master!';}
+  else if(pct>=75){medal='🥇';title='Excellent Thinker!';}
+  else if(pct>=55){medal='🥈';title='Good Reasoning!';}
+  else if(pct>=35){medal='🥉';title="You're Learning!";}
+  document.getElementById('medal').textContent=medal;
+  document.getElementById('rtitle').textContent=title;
+  document.getElementById('rpts').textContent=score;
+  document.getElementById('rsub').textContent=pct+'% accuracy';
+  document.getElementById('bc').textContent=correct;
+  document.getElementById('bw').textContent=wrong;
+  document.getElementById('bs').textContent=best;
+  document.getElementById('pbar').style.width='100%';
+  show('s-result');
+}
+</script>
+</body>
+</html>
